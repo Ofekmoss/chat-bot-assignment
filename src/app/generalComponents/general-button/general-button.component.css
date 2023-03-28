@@ -12,4 +12,5 @@ button {
     background: #8a45b5;
     padding: 10px 30px;
     border-radius: 10px;
+    cursor: pointer;
 }

@@ -1,7 +1,9 @@
 <div class="general-input__container">
-    <label for="input">{{label}}</label>
+    <label for="input" *ngIf="label">{{label}}</label>
     <input 
         id="input" 
         type="text"
+        autocomplete="off"
+        [placeholder]="placeholder"
         [formControlName]="controlName">
 </div>

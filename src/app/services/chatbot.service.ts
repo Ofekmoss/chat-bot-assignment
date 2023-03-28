@@ -16,35 +16,36 @@ export class ChatbotService {
 
   constructor(private http: HttpClient) { }
 
-  async onNewMessage(message: string) {
-    let botMessage = 'BOT REPLAY';
+  onNewMessage(message: string) {
+    let botMessage;
+
     if (this.askForWeather) {
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${message}&appid=${ChatbotConstants.WEATHER_API_KEY}&units=metric`;
-      this.http.get(url).pipe(
-        catchError((error) => {
-          botMessage = "Not available city :("
-          this.chat.push(new Conversation(message, botMessage));
-          throw error;
-        })
-        ).subscribe((data: any) => {
-          this.askForWeather = false;
+      botMessage = this.getWeatherMessageByCity(message).subscribe(
+        (data: any) => {
           botMessage =  `Current temperature in ${message}: ${data.main.temp} degrees Celsius.`;
+          this.chat.push(new Conversation(message, botMessage));
+        },
+        (error) => {
+          botMessage =  `Couldn't find weather information for ${message}`;
           this.chat.push(new Conversation(message, botMessage));
       });
       return;
-    } 
+    }
     if (message.match(this.getRegExp(ChatbotConstants.CHATBOT_DAY)) || message.match(this.getRegExp(ChatbotConstants.CHATBOT_TIME))) {
       const dayName = ChatbotConstants.DAYS[new Date().getDay()];
       botMessage = `Today is ${dayName}`;
     } else if (message.match(this.getRegExp(ChatbotConstants.CHATBOT_WEATHER))) {
       this.askForWeather = true;
-      botMessage = "Which city?";
-    } else if (message.match(this.getRegExp(ChatbotConstants.CHATBOT_BYE_BYE))) {
-      botMessage = "a random goodbye message";
+      botMessage = "For which city whould you like to know the weather?";
+    } else if (message === ChatbotConstants.CHATBOT_BYE_BYE) {
+      botMessage = "Goodbye :)";
       this.chatbotTerminate.next();
     } else if (message[0] === ChatbotConstants.CHATBOT_HIDDEN_KEY) {
       botMessage = "";
-    } 
+    } else {
+      botMessage = message.split("").reverse().join("");
+    }
+
     this.chat.push(new Conversation(message, botMessage));
   }
 
@@ -53,22 +54,12 @@ export class ChatbotService {
   }
 
   private getRegExp(word: string) {
-    return new RegExp(`\\b${word}\\b`, 'gi')
+    return new RegExp(`\\b${word}\\b`, 'gi');
   }
 
-  // private getWeatherByCity(city: string) {
-  //   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${ChatbotConstants.WEATHER_API_KEY}&units=metric`;
-  //   let botMessage: string;
-  //   this.http.get(url).pipe(
-  //     catchError((error) => {
-  //       botMessage = "Not available city :("
-  //       return botMessage;
-  //     })
-  //     ).subscribe((data: any) => {
-  //       this.askForWeather = false;
-  //       botMessage =  `Current temperature in ${city}: ${data.main.temp} degrees Celsius.`;
-  //       console.log(botMessage);
-  //       return botMessage;
-  //   });
-  // }
+  private getWeatherMessageByCity(city) {
+    this.askForWeather = false;
+    const url = ChatbotConstants.WEATHER_API.url(city);
+    return this.http.get(url);
+  }
 }
