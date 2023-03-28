@@ -1,0 +1,12 @@
+<div class="chat-bot-input__container">
+    <form [formGroup]="chatbotForm" (ngSubmit)="onSubmit()">
+        <app-general-input 
+            class="input" 
+            label="Your Message"
+            controlName="message"></app-general-input>
+        <app-general-button 
+            class="button" 
+            text="SEND"
+            [disabled]="!chatbotForm.valid"></app-general-button>
+    </form>
+</div>

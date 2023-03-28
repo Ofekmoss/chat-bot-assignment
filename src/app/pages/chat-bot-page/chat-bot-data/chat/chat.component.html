@@ -1,0 +1,13 @@
+<div class="chat__container">
+    <div class="conversation" *ngFor="let conversation of chat">
+        <app-general-message 
+            class="message user" 
+            [message]="conversation.userMessage" 
+            [userMessage]="true"></app-general-message>
+        <app-general-message 
+            class="message bot" 
+            [message]="conversation.botMessage" 
+            [userMessage]="false"
+            *ngIf="conversation.botMessage"></app-general-message>
+    </div>
+</div>

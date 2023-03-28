@@ -1,0 +1,17 @@
+.general-message__container {
+    width: fit-content;
+    height: 100%;
+    border-radius: 20px;
+    padding: 8px 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    color: white;
+    background: linear-gradient(to bottom, #00D0EA 0%, #0085D1 100%);
+    background-attachment: fixed;
+}
+
+.bot {
+    text-align: end;
+    color: black;
+    background: #eee;
+}
